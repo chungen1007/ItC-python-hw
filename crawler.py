@@ -6,7 +6,7 @@ from time import sleep
 class Crawler(object):
     def __init__(self,
                  base_url='https://www.csie.ntu.edu.tw/news/',
-                 rel_url='news.php?class=101'):
+                 rel_url='news.php?class=103'):
         self.base_url = base_url
         self.rel_url = rel_url
 
@@ -80,5 +80,12 @@ class Crawler(object):
                 aphy: 黃士傑, Aja Huang 台灣人，國立臺灣師範大學資訊工程研究所博士，現為DeepMind Staff Research Scientist。``
         """
         # TODO: return a string, note that csv format will be made at main.py before wrote into the file
-        content = ""
-        return content
+        if (url):
+            response = requests.get(url)
+            html_text = response.content.decode('utf-8')
+            root = etree.HTML(html_text)
+            contentlist = root.xpath("//div[1]/div/div[2]/div/div/div[2]/div/div[2]/p/span//text()")
+            content = str()
+            for string in contentlist:
+                content += string
+            return content
