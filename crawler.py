@@ -6,7 +6,7 @@ from time import sleep
 class Crawler(object):
     def __init__(self,
                  base_url='https://www.csie.ntu.edu.tw/news/',
-                 rel_url='news.php?class=103'):
+                 rel_url='news.php?class=101'):
         self.base_url = base_url
         self.rel_url = rel_url
 
@@ -56,17 +56,19 @@ class Crawler(object):
         rel_urls = root.xpath("//div[1]/div/div[2]/div/div/div[2]/div/table/tbody/tr/td[2]/a/@href")
 
         contents = list()
+        last_date = datetime.fromisoformat(dates[0])
         for date, title, rel_url in zip(dates, titles, rel_urls):
             # 1. concatenate relative url to full url
             # 2. for each url call self.crawl_content
             #    to crawl the content
             # 3. append the date, title and content to
             #    contents
-            content = (date, title, self.crawl_content(self.base_url + rel_url))
-            contents.append(content)
-
-        last_date = dates[9].split('-')
-        last_date = datetime(int(last_date[0]), int(last_date[1]), int(last_date[2]))
+            cur_date = datetime.fromisoformat(date)
+            if (cur_date < last_date):
+                last_date = cur_date
+            if (cur_date >= start_date and cur_date <= end_date):
+                content = (date, title, self.crawl_content(self.base_url + rel_url))
+                contents.append(content)
 
         return contents, last_date
 
