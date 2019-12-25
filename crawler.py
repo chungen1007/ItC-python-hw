@@ -56,17 +56,21 @@ class Crawler(object):
         rel_urls = root.xpath("//div[1]/div/div[2]/div/div/div[2]/div/table/tbody/tr/td[2]/a/@href")
 
         contents = list()
-        last_date = datetime.fromisoformat(dates[0])
+        last_date = dates[0].split('-')
+        last_date = datetime(int(last_date[0]), int(last_date[1]), int(last_date[2]))
+        
         for date, title, rel_url in zip(dates, titles, rel_urls):
             # 1. concatenate relative url to full url
             # 2. for each url call self.crawl_content
             #    to crawl the content
             # 3. append the date, title and content to
             #    contents
-            cur_date = datetime.fromisoformat(date)
-            if (cur_date < last_date):
-                last_date = cur_date
-            if (cur_date >= start_date and cur_date <= end_date):
+            curr_date = date.split('-')
+            curr_date = datetime(int(curr_date[0]), int(curr_date[1]), int(curr_date[2]))
+            if (curr_date < last_date):
+                last_date = curr_date
+            if (curr_date >= start_date and curr_date <= end_date):
+                title = title.replace(' ', '')
                 content = (date, title, self.crawl_content(self.base_url + rel_url))
                 contents.append(content)
 
@@ -81,13 +85,13 @@ class Crawler(object):
                 Shou-De LinAbstract: 我將與同學們分享，我博士班研究到加入DeepMind所參與的projects (AlphaGo, AlphaStar與AlphaZero)，以及從我個人與DeepMind的視角對未來AI發展的展望。 Biogr
                 aphy: 黃士傑, Aja Huang 台灣人，國立臺灣師範大學資訊工程研究所博士，現為DeepMind Staff Research Scientist。``
         """
-        # TODO: return a string, note that csv format will be made at main.py before wrote into the file
         if (url):
             response = requests.get(url)
             html_text = response.content.decode('utf-8')
             root = etree.HTML(html_text)
-            contentlist = root.xpath("//div[1]/div/div[2]/div/div/div[2]/div/div[2]/p/span//text()")
+            contentlist = root.xpath("//div[1]/div/div[2]/div/div/div[2]//div[@class='editor content']//text()")
             content = str()
             for string in contentlist:
                 content += string
+            content = content.replace('\r\n', ' ')
             return content
