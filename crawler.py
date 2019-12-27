@@ -49,7 +49,7 @@ class Crawler(object):
         ).content.decode()
         sleep(0.1)
 
-        # parse the response and get dates, titles and relative url with etree
+        # parse the response and get dates, titles, pageview and relative url with etree
         root = etree.HTML(res)	
         dates = root.xpath("//div[1]/div/div[2]/div/div/div[2]/div/table/tbody/tr/td[1]/text()")
         titles = root.xpath("//div[1]/div/div[2]/div/div/div[2]/div/table/tbody/tr/td[2]/a/text()")
@@ -62,10 +62,8 @@ class Crawler(object):
         
         for date, title, pageview, rel_url in zip(dates, titles, pageviews, rel_urls):
             # 1. concatenate relative url to full url
-            # 2. for each url call self.crawl_content
-            #    to crawl the content
-            # 3. append the date, title and content to
-            #    contents
+            # 2. for each url call self.crawl_content to crawl the content
+            # 3. append the date, title, pageview and content to contents
             curr_date = date.split('-')
             curr_date = datetime(int(curr_date[0]), int(curr_date[1]), int(curr_date[2]))
             if (curr_date < last_date):
