@@ -6,7 +6,7 @@ from time import sleep
 class Crawler(object):
     def __init__(self,
                  base_url='https://www.csie.ntu.edu.tw/news/',
-                 rel_url='news.php?class=101'):
+                 rel_url='news.php?class=106'):
         self.base_url = base_url
         self.rel_url = rel_url
 
@@ -53,13 +53,14 @@ class Crawler(object):
         root = etree.HTML(res)	
         dates = root.xpath("//div[1]/div/div[2]/div/div/div[2]/div/table/tbody/tr/td[1]/text()")
         titles = root.xpath("//div[1]/div/div[2]/div/div/div[2]/div/table/tbody/tr/td[2]/a/text()")
+        pageviews = root.xpath("/html/body/div[1]/div/div[2]/div/div/div[2]/div/table/tbody/tr/td[3]/text()")
         rel_urls = root.xpath("//div[1]/div/div[2]/div/div/div[2]/div/table/tbody/tr/td[2]/a/@href")
 
         contents = list()
         last_date = dates[0].split('-')
         last_date = datetime(int(last_date[0]), int(last_date[1]), int(last_date[2]))
         
-        for date, title, rel_url in zip(dates, titles, rel_urls):
+        for date, title, pageview, rel_url in zip(dates, titles, pageviews, rel_urls):
             # 1. concatenate relative url to full url
             # 2. for each url call self.crawl_content
             #    to crawl the content
@@ -71,7 +72,7 @@ class Crawler(object):
                 last_date = curr_date
             if (curr_date >= start_date and curr_date <= end_date):
                 title = title.replace(' ', '')
-                content = (date, title, self.crawl_content(self.base_url + rel_url))
+                content = (date, title, pageview, self.crawl_content(self.base_url + rel_url))
                 contents.append(content)
 
         return contents, last_date

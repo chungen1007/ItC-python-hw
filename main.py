@@ -8,10 +8,10 @@ if __name__ == '__main__':
     #print(contents)
     # write content to file according to spec
     with open(args.file, 'w') as f:
-        f.write('"date","title","content"\n')
-        for date, title, content in contents:
+        f.write('"date","title","pagview", "content"\n')
+        for date, title, pageview, content in contents:
             #change to csv format and write into the file
             title = '""'.join(title.split('"'))
             content = '""'.join(content.split('"'))
-            out_str = f'"{str(date)}","{title}","{content}"\n'
+            out_str = f'"{str(date)}","{title}","{str(pageview)}","{content}"\n'
             f.write(out_str)
