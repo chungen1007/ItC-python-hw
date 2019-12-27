@@ -29,6 +29,10 @@ class Crawler(object):
                 contents += rets
             if last_date < start_date:
                 break
+        for i in range(len(contents)):
+            for j in range(len(contents) - 1):
+                if (contents[j][0] < contents[j + 1][0]):
+                    contents[j], contents[j + 1] = contents[j + 1], contents[j]
         return contents
 
     def crawl_page(self, start_date, end_date, page=''):
