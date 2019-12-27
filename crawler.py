@@ -49,29 +49,28 @@ class Crawler(object):
         ).content.decode()
         sleep(0.1)
 
-        # parse the response and get dates, titles and relative url with etree
+        # parse the response and get dates, titles, pageview and relative url with etree
         root = etree.HTML(res)	
         dates = root.xpath("//div[1]/div/div[2]/div/div/div[2]/div/table/tbody/tr/td[1]/text()")
         titles = root.xpath("//div[1]/div/div[2]/div/div/div[2]/div/table/tbody/tr/td[2]/a/text()")
+        pageviews = root.xpath("/html/body/div[1]/div/div[2]/div/div/div[2]/div/table/tbody/tr/td[3]/text()")
         rel_urls = root.xpath("//div[1]/div/div[2]/div/div/div[2]/div/table/tbody/tr/td[2]/a/@href")
 
         contents = list()
         last_date = dates[0].split('-')
         last_date = datetime(int(last_date[0]), int(last_date[1]), int(last_date[2]))
         
-        for date, title, rel_url in zip(dates, titles, rel_urls):
+        for date, title, pageview, rel_url in zip(dates, titles, pageviews, rel_urls):
             # 1. concatenate relative url to full url
-            # 2. for each url call self.crawl_content
-            #    to crawl the content
-            # 3. append the date, title and content to
-            #    contents
+            # 2. for each url call self.crawl_content to crawl the content
+            # 3. append the date, title, pageview and content to contents
             curr_date = date.split('-')
             curr_date = datetime(int(curr_date[0]), int(curr_date[1]), int(curr_date[2]))
             if (curr_date < last_date):
                 last_date = curr_date
             if (curr_date >= start_date and curr_date <= end_date):
                 title = title.replace(' ', '')
-                content = (date, title, self.crawl_content(self.base_url + rel_url))
+                content = (date, title, pageview, self.crawl_content(self.base_url + rel_url))
                 contents.append(content)
 
         return contents, last_date
