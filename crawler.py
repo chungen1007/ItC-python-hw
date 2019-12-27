@@ -6,7 +6,7 @@ from time import sleep
 class Crawler(object):
     def __init__(self,
                  base_url='https://www.csie.ntu.edu.tw/news/',
-                 rel_url='news.php?class=106'):
+                 rel_url='news.php?class=101'):
         self.base_url = base_url
         self.rel_url = rel_url
 
